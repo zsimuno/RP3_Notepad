@@ -26,6 +26,7 @@ namespace Projekt_RP3
 
         void ProvjeraTabova()
         {
+            // Mijenja mogućnost odabira opcija na osnovu toga ima li otvorenih tabova ili ne
             Boolean EnableClick = true;
             if (tabControl2.SelectedTab == null)
             {
@@ -45,6 +46,7 @@ namespace Projekt_RP3
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Otvara novi tab sa novit txt file-om bez imena
             TabPage tp = new TabPage("(No name)");
             tabControl2.TabPages.Add(tp);
 
@@ -62,12 +64,14 @@ namespace Projekt_RP3
         
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Zatvara odabrani tab
             tabControl2.TabPages.Remove(tabControl2.SelectedTab);
             ProvjeraTabova();
         }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Printa odabrani tab
             PrintPreviewDialog myPrintDialog = new PrintPreviewDialog();
             printDocument1.DocumentName = tabControl2.SelectedTab.Text;
             myPrintDialog.Document = printDocument1;
@@ -78,7 +82,7 @@ namespace Projekt_RP3
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            // Otvara dijalog za otvaranje teksta i otvara taj tekst u novom tabu
             OpenFileDialog open = new OpenFileDialog();
 
             if (open.ShowDialog() == DialogResult.OK)
@@ -106,6 +110,7 @@ namespace Projekt_RP3
 
         private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
         {
+            // Pomoćna funkcija za printanje
             string str = tabControl2.SelectedTab.Controls[0].Text;
             int chars;
             int lines;
@@ -136,6 +141,7 @@ namespace Projekt_RP3
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Sprema tekstualnu datoteku (trenutno odabrani tab)
             RichTextBox Rtb = (RichTextBox) tabControl2.SelectedTab.Controls[0];
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
@@ -157,6 +163,7 @@ namespace Projekt_RP3
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Stavlja odabrani tekst na clipboard
             RichTextBox Rtb = (RichTextBox) tabControl2.SelectedTab.Controls[0];
             if (Rtb.SelectedText != string.Empty)
             {
@@ -166,11 +173,12 @@ namespace Projekt_RP3
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Paste-anje teksta sa clipboarda na mjesto kursora
             RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
             if (Clipboard.GetText(TextDataFormat.Text).ToString() != string.Empty)
             {
-                Rtb.SelectedText = string.Empty; // za pasteanje prek selectanog texta
-                int i = Rtb.SelectionStart; // da zapami gdje je kursor bil
+                Rtb.SelectedText = string.Empty; // Za pasteanje preko odabranog texta
+                int i = Rtb.SelectionStart; // Da zapami gdje je kursor bio
                 string str = Clipboard.GetText(TextDataFormat.Text).ToString();
                 i += str.Length; 
                 Rtb.Text = Rtb.Text.Insert(Rtb.SelectionStart, str);
@@ -180,6 +188,7 @@ namespace Projekt_RP3
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Cut-a text i stavlja na cliboard
             RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
             if (Rtb.SelectedText != string.Empty)
             {
@@ -190,18 +199,21 @@ namespace Projekt_RP3
 
         private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Odabire cijeli tekst u trenutnom otvorenom tabu
             RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
             Rtb.SelectAll();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Briše trenutno odabrani tekst u trenutno otvorenom tabu
             RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
             Rtb.SelectedText = string.Empty;
         }
 
         private void changeFontToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Mijenja font teksta
             RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
             FontDialog fd = new FontDialog();
             fd.ShowColor = true;
@@ -222,6 +234,7 @@ namespace Projekt_RP3
 
         private void webBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Otvara browser desno od text editora
             splitContainer1.Panel2Collapsed = false;
             splitContainer1.Panel2.Show();
             
