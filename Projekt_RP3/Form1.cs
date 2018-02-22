@@ -15,6 +15,15 @@ namespace Projekt_RP3
 {
     //Paziti:
     //Za svaku opciju koja ovisi o tome da ima neki text otvoren nadodati u provjera tabova!!!!!
+    // TODO:
+    // Mijenjanje veličite taba
+    // Brace Completion
+    // Napraviti listu ključnih riječi (45. slajd predavanja)
+    // Boje?
+    // Optional: 
+    // Status bar koji pokazuje u kojem smo retku
+    // Enter nakon { da prijeđe u novi red sa tabom
+    // Find funkciju
     
     public partial class Form1 : Form
     {
@@ -316,21 +325,20 @@ namespace Projekt_RP3
             {
                 if(e.KeyChar == 8) // 8 predstavlja BACKSPACE
                 {
-                    if(lista.count == 0) // Ako je prazna rijec sve resetiraj i odmakni listu
+                    // Ako se pritisne BACKSPACE smanji keyword i ponovno mijenjaj ponudjenu rijec
+                    lista.keyword = lista.keyword.Remove(lista.keyword.Length - 1);
+                    lista.MijenjajListu();
+                    lista.count--;
+                    if (lista.count == 0) // Ako je prazna rijec sve resetiraj i odmakni listu
                     {
                         lista.count = 0;
                         lista.keyword = "";
                         lista.listShow = false;
                         lista.Hide();
                     }
-                    else
-                    {
-                        // Ako se pritisne BACKSPACE smanji keyword i ponovno mijenjaj ponudjenu rijec
-                        lista.keyword = lista.keyword.Remove(lista.keyword.Length - 1);
-                        lista.MijenjajListu();
-                        lista.count--;
+                    else 
                         tb.Focus();
-                    }
+                    
                     
                 }
                 else

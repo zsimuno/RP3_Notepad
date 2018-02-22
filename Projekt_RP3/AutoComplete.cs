@@ -69,7 +69,7 @@ namespace Projekt_RP3
                     preporuka.Add(s);
                 }
             }
-            Debug.WriteLine(preporuka.Count.ToString());
+
             if(preporuka.Count == 0)
             {
                 this.Hide();
