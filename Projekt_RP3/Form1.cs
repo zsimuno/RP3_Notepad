@@ -24,7 +24,8 @@ namespace Projekt_RP3
     // Status bar koji pokazuje u kojem smo retku
     // Enter nakon { da prijeđe u novi red sa tabom
     // Find funkciju
-    
+    // Na dobule click ponuđene opcije se sprema nedovršena riješ (no -> notepad)
+
     public partial class Form1 : Form
     {
         private readonly object tabControl1;
@@ -289,6 +290,7 @@ namespace Projekt_RP3
             browser.Size = new Size(Width, Height - 50);
             browser.Location = new Point(0, 40);
             browser.Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
+            browser.ScriptErrorsSuppressed = true;
 
             splitContainer1.Panel2.Controls.Add(browser);
             splitContainer1.Panel2.Controls.Add(label);
@@ -299,24 +301,32 @@ namespace Projekt_RP3
 
             btnTrazi.Click += new EventHandler(btnTrazi_Click);
             btnZatvori.Click += new EventHandler(btnZatvori_Click);
-
-            void btnTrazi_Click(object s, EventArgs e1)
-            {
-                splitContainer1.AutoScroll = true;
-                browser.Navigate(textBox.Text);
-
-            }
-
-            void btnZatvori_Click(object s, EventArgs e1)
-            {
-                splitContainer1.Panel2Collapsed = true;
-                splitContainer1.Panel2.Hide();
-
-            }
         }
 
+        void btnTrazi_Click(object s, EventArgs e1)
+        {
+            splitContainer1.AutoScroll = true;
+            WebBrowser browser = new WebBrowser();
+            browser = (WebBrowser)splitContainer1.Panel2.Controls[0];
+            TextBox textBox = new TextBox();
+            textBox = (TextBox)splitContainer1.Panel2.Controls[2];
+            browser.Navigate(textBox.Text);
+
+        }
+
+        void btnZatvori_Click(object s, EventArgs e1)
+        {
+            splitContainer1.Panel2Collapsed = true;
+            splitContainer1.Panel2.Hide();
+
+        }
         private void Tb_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (!cEditorToolStripMenuItem.Checked)
+            {
+                return;
+            }
+
             RichTextBox tb = sender as RichTextBox;
             AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
 
@@ -372,8 +382,13 @@ namespace Projekt_RP3
 
         private void Tb_KeyDown(object sender, KeyEventArgs e)
         {
+            if (!cEditorToolStripMenuItem.Checked)
+            {
+                return;
+            }
+
             // Neke od kljucnih tipki ignoriraj
-            if(e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Menu
+            if (e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Menu
                 || e.KeyCode == Keys.ControlKey || e.KeyCode == Keys.RMenu)
             {
                 return;
@@ -470,9 +485,6 @@ namespace Projekt_RP3
             tb.SelectionStart = endPlace;
             lista.count = 0;
         }
-
-        
-
 
     }
 

@@ -35,6 +35,7 @@ namespace Projekt_RP3
 
             SveRijeci = new List<string>();
             preporuka = new List<string>();
+            dodajKljucneRijeci();
 
             bs = new BindingSource();
             bs.DataSource = preporuka;
@@ -46,6 +47,10 @@ namespace Projekt_RP3
             base.OnPaint(pe);
         }
 
+        public void dodajKljucneRijeci()
+        {
+            //ovdje ću dodat ključne riječi u listu
+        }
         public void DodajRijecIResetiraj() // Dodaje rijec u glavnu listu i resetira listu
         {
             if(!SveRijeci.Contains(keyword))

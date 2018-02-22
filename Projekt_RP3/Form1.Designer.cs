@@ -50,6 +50,7 @@
             this.tabSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.webBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl2 = new System.Windows.Forms.TabControl();
@@ -214,17 +215,25 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.webBrowserToolStripMenuItem});
+            this.webBrowserToolStripMenuItem,
+            this.cEditorToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // webBrowserToolStripMenuItem
             // 
             this.webBrowserToolStripMenuItem.Name = "webBrowserToolStripMenuItem";
-            this.webBrowserToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.webBrowserToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.webBrowserToolStripMenuItem.Text = "Web Browser";
             this.webBrowserToolStripMenuItem.Click += new System.EventHandler(this.webBrowserToolStripMenuItem_Click);
+            // 
+            // cEditorToolStripMenuItem
+            // 
+            this.cEditorToolStripMenuItem.CheckOnClick = true;
+            this.cEditorToolStripMenuItem.Name = "cEditorToolStripMenuItem";
+            this.cEditorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cEditorToolStripMenuItem.Text = "C# Editor";
             // 
             // printDocument1
             // 
@@ -299,7 +308,7 @@
         private System.Windows.Forms.ToolStripMenuItem webBrowserToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TabControl tabControl2;
-        
+        private System.Windows.Forms.ToolStripMenuItem cEditorToolStripMenuItem;
     }
 }
 
