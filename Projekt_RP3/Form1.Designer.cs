@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.afasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.asfaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -231,9 +232,7 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 24);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -243,20 +242,17 @@
             this.splitContainer1.Panel2Collapsed = true;
             this.splitContainer1.Size = new System.Drawing.Size(693, 633);
             this.splitContainer1.SplitterDistance = 336;
-            this.splitContainer1.TabIndex = 3;
             this.splitContainer1.SplitterWidth = 3;
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-
-
+            this.splitContainer1.TabIndex = 3;
             // 
             // tabControl2
             // 
-            this.tabControl2.Location = new System.Drawing.Point(12, 12);
+            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl2.Location = new System.Drawing.Point(0, 0);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(664, 609);
+            this.tabControl2.Size = new System.Drawing.Size(693, 633);
             this.tabControl2.TabIndex = 0;
-            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // Form1
             // 
@@ -265,8 +261,9 @@
             this.ClientSize = new System.Drawing.Size(693, 657);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Notepad#";
             this.contextMenuStrip1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

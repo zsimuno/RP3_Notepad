@@ -45,6 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoComplete.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AutoComplete.Designer.cs">
+      <DependentUpon>AutoComplete.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

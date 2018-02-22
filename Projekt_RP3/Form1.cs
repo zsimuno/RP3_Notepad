@@ -22,7 +22,9 @@ namespace Projekt_RP3
         public Form1()
         {
             InitializeComponent();
+
         }
+        
 
         void ProvjeraTabova()
         {
@@ -51,17 +53,24 @@ namespace Projekt_RP3
             tabControl2.TabPages.Add(tp);
 
             RichTextBox tb = new RichTextBox();
+            tb.KeyDown     += Tb_KeyDown;
+            tb.KeyPress    += Tb_KeyPress;
+            tb.TabStop = false;
             tb.Dock = DockStyle.Fill;
             tb.Multiline = true;
 
-            tp.Controls.Add(tb);
+            AutoComplete a = new AutoComplete();
+            a.DoubleClick += Tb_DoubleClick;
 
+            tp.Controls.Add(a);
+            tp.Controls.Add(tb);
 
             tabControl2.SelectTab(tp);
 
             ProvjeraTabova();
         }
-        
+       
+
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Zatvara odabrani tab
@@ -95,11 +104,18 @@ namespace Projekt_RP3
                 tabControl2.TabPages.Add(tp);
 
                 RichTextBox tb = new RichTextBox();
+                tb.KeyDown      += Tb_KeyDown;
+                tb.KeyPress     += Tb_KeyPress;
+                tb.TabStop = false;
                 tb.Dock = DockStyle.Fill;
                 tb.Multiline = true;
                 foreach (string s in filelines)
                     tb.Text += s + "\n";
 
+                AutoComplete a = new AutoComplete();
+                a.DoubleClick += Tb_DoubleClick;
+
+                tp.Controls.Add(a);
                 tp.Controls.Add(tb);
 
                 tabControl2.SelectTab(tp);
@@ -111,7 +127,7 @@ namespace Projekt_RP3
         private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
         {
             // Pomoćna funkcija za printanje
-            string str = tabControl2.SelectedTab.Controls[0].Text;
+            string str = tabControl2.SelectedTab.Controls[1].Text;
             int chars;
             int lines;
             Font f = new Font("Arial", 12);
@@ -142,7 +158,7 @@ namespace Projekt_RP3
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Sprema tekstualnu datoteku (trenutno odabrani tab)
-            RichTextBox Rtb = (RichTextBox) tabControl2.SelectedTab.Controls[0];
+            RichTextBox Rtb = (RichTextBox) tabControl2.SelectedTab.Controls[1];
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
             saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
@@ -164,7 +180,7 @@ namespace Projekt_RP3
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Stavlja odabrani tekst na clipboard
-            RichTextBox Rtb = (RichTextBox) tabControl2.SelectedTab.Controls[0];
+            RichTextBox Rtb = (RichTextBox) tabControl2.SelectedTab.Controls[1];
             if (Rtb.SelectedText != string.Empty)
             {
                 Clipboard.SetText(Rtb.SelectedText);
@@ -174,7 +190,7 @@ namespace Projekt_RP3
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Paste-anje teksta sa clipboarda na mjesto kursora
-            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
+            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
             if (Clipboard.GetText(TextDataFormat.Text).ToString() != string.Empty)
             {
                 Rtb.SelectedText = string.Empty; // Za pasteanje preko odabranog texta
@@ -189,7 +205,7 @@ namespace Projekt_RP3
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Cut-a text i stavlja na cliboard
-            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
+            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
             if (Rtb.SelectedText != string.Empty)
             {
                 Clipboard.SetText(Rtb.SelectedText);
@@ -200,21 +216,21 @@ namespace Projekt_RP3
         private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Odabire cijeli tekst u trenutnom otvorenom tabu
-            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
+            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
             Rtb.SelectAll();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Briše trenutno odabrani tekst u trenutno otvorenom tabu
-            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
+            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
             Rtb.SelectedText = string.Empty;
         }
 
         private void changeFontToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Mijenja font teksta
-            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[0];
+            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
             FontDialog fd = new FontDialog();
             fd.ShowColor = true;
             if (fd.ShowDialog() == DialogResult.OK)
@@ -289,10 +305,138 @@ namespace Projekt_RP3
             }
         }
 
-        
-            
-            
+        private void Tb_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            RichTextBox tb = sender as RichTextBox;
+            AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
 
-        
+            if (lista.listShow == true) 
+            {
+                lista.keyword += e.KeyChar;
+                lista.count++;
+                Point point = tb.GetPositionFromCharIndex(tb.SelectionStart);
+                point.Y += (int)Math.Ceiling(tb.Font.GetHeight()) + tb.Location.Y;
+                point.X += tb.Location.X;
+                lista.Location = point;
+                lista.Show();
+                lista.SelectedIndex = 0;
+                lista.SelectedIndex = lista.FindString(lista.keyword);
+                tb.Focus();
+            }
+            else
+            { 
+                if (char.IsLetterOrDigit( e.KeyChar )) 
+                {
+                    lista.keyword += e.KeyChar;
+                    lista.listShow = true;
+                    Point point = tb.GetPositionFromCharIndex(tb.SelectionStart);
+                    point.Y += (int)Math.Ceiling(tb.Font.GetHeight()) + tb.Location.Y; 
+                    point.X += tb.Location.Y; 
+                    lista.Location = point;
+                    lista.count++;
+                    lista.Show();
+                    lista.SelectedIndex = 0;
+                    lista.SelectedIndex = lista.FindString(lista.keyword);
+                    tb.Focus();
+
+                }
+            }
+        }
+
+        private void Tb_KeyDown(object sender, KeyEventArgs e)
+        {
+            RichTextBox tb = sender as RichTextBox;
+            AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                lista.preporuka.Add(lista.keyword);
+                lista.bs.ResetBindings(false);
+                lista.count = 0;
+                lista.keyword = "";
+                lista.listShow = false;
+                lista.Hide();
+
+            }
+            if (e.KeyCode == Keys.Space)
+            {
+                lista.preporuka.Add(lista.keyword);
+                lista.bs.ResetBindings(false);
+                lista.count = 0;
+                lista.keyword = "";
+                lista.listShow = false;
+                lista.Hide();
+            }
+
+            if (lista.listShow == true)
+            {
+                if (e.KeyCode == Keys.Up)
+                {
+                    lista.Focus();
+                    if (lista.SelectedIndex != 0)
+                    {
+                        lista.SelectedIndex -= 1;
+                    }
+                    else
+                    {
+                        lista.SelectedIndex = 0;
+                    }
+                    tb.Focus();
+
+                }
+                else if (e.KeyCode == Keys.Down)
+                {
+                    lista.Focus();
+                    try
+                    {
+                        lista.SelectedIndex += 1;
+                    }
+                    catch
+                    {
+                    }
+                    tb.Focus();
+                }
+
+                if (e.KeyCode == Keys.Tab)
+                {
+
+                    string autoText = lista.SelectedItem.ToString();
+
+                    int beginPlace = tb.SelectionStart - lista.count;
+                    tb.Select(beginPlace, lista.count);
+                    tb.SelectedText = "";
+                    tb.Text += autoText;
+                    tb.Focus();
+                    lista.listShow = false;
+                    lista.Hide();
+                    int endPlace = autoText.Length + beginPlace;
+                    tb.SelectionStart = endPlace;
+                    lista.count = 0;
+
+                }
+            }
+        }
+
+        private void Tb_DoubleClick(object sender, EventArgs e)
+        {
+            RichTextBox tb = tabControl2.SelectedTab.Controls[1] as RichTextBox;
+            AutoComplete lista = sender as AutoComplete;
+
+            string autoText = lista.SelectedItem.ToString();
+            int beginPlace = tb.SelectionStart - lista.count;
+            tb.Select(beginPlace, lista.count);
+            tb.SelectedText = "";
+            tb.Text += autoText;
+            tb.Focus();
+            lista.listShow = false;
+            lista.Hide();
+            int endPlace = autoText.Length + beginPlace;
+            tb.SelectionStart = endPlace;
+            lista.count = 0;
+        }
+
+
     }
+
+   
 }
