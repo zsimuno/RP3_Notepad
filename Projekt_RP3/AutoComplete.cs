@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace Projekt_RP3
 {
     public partial class AutoComplete : System.Windows.Forms.ListBox
     {
-        public List<string> SveRiječi; // Lista u koju spremamo sve riječi za preporuku
+        public List<string> SveRijeci; // Lista u koju spremamo sve riječi za preporuku
 
         public List<string> preporuka; // Lista koja je povezana sa autoComplete ListBox-om 
                                        // i u nju spremamo riječi koje ćemo preporučiti korisniku
@@ -32,18 +33,8 @@ namespace Projekt_RP3
             keyword = "";
             count = 0;
 
-            SveRiječi = new List<string>();
+            SveRijeci = new List<string>();
             preporuka = new List<string>();
-
-            preporuka.Add("int");
-            preporuka.Add("double");
-            preporuka.Add("string");
-            preporuka.Add("char");
-            preporuka.Add("List");
-            
-
-
-
 
             bs = new BindingSource();
             bs.DataSource = preporuka;
@@ -53,6 +44,41 @@ namespace Projekt_RP3
         protected override void OnPaint(PaintEventArgs pe)
         {
             base.OnPaint(pe);
+        }
+
+        public void DodajRijecIResetiraj() // Dodaje rijec u glavnu listu i resetira listu
+        {
+            if(!SveRijeci.Contains(keyword))
+            {
+                SveRijeci.Add(keyword);
+                SveRijeci.Sort();
+            }
+                
+            count = 0;
+            keyword = "";
+            listShow = false;
+        }
+
+        public void MijenjajListu() // Stavlja u preporuke samo rijeci koje pocinju sa onim sto se upisuje
+        {
+            preporuka.Clear();
+            foreach(string s in SveRijeci)
+            {
+                if(s.StartsWith(keyword))
+                {
+                    preporuka.Add(s);
+                }
+            }
+            Debug.WriteLine(preporuka.Count.ToString());
+            if(preporuka.Count == 0)
+            {
+                this.Hide();
+            }
+            else
+            {
+                this.Show();
+            }
+            bs.ResetBindings(false);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
@@ -310,33 +311,51 @@ namespace Projekt_RP3
             RichTextBox tb = sender as RichTextBox;
             AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
 
+            // Ako je lista već otvorena
             if (lista.listShow == true) 
             {
-                lista.keyword += e.KeyChar;
-                lista.count++;
-                Point point = tb.GetPositionFromCharIndex(tb.SelectionStart);
-                point.Y += (int)Math.Ceiling(tb.Font.GetHeight()) + tb.Location.Y;
-                point.X += tb.Location.X;
-                lista.Location = point;
-                lista.Show();
-                lista.SelectedIndex = 0;
-                lista.SelectedIndex = lista.FindString(lista.keyword);
-                tb.Focus();
+                if(e.KeyChar == 8) // 8 predstavlja BACKSPACE
+                {
+                    if(lista.count == 0) // Ako je prazna rijec sve resetiraj i odmakni listu
+                    {
+                        lista.count = 0;
+                        lista.keyword = "";
+                        lista.listShow = false;
+                        lista.Hide();
+                    }
+                    else
+                    {
+                        // Ako se pritisne BACKSPACE smanji keyword i ponovno mijenjaj ponudjenu rijec
+                        lista.keyword = lista.keyword.Remove(lista.keyword.Length - 1);
+                        lista.MijenjajListu();
+                        lista.count--;
+                        tb.Focus();
+                    }
+                    
+                }
+                else
+                {
+                    lista.keyword += e.KeyChar;
+                    lista.MijenjajListu();
+                    lista.count++;
+                    tb.Focus();
+                }
+                
             }
             else
             { 
-                if (char.IsLetterOrDigit( e.KeyChar )) 
+                // Ako lista nije otvorena otvori je i pokazi preporucene rijeci
+                // Rijeci koje preporucujemo se sastoje od brojeva, slova, obicne crte i donje crte
+                if (char.IsLetterOrDigit( e.KeyChar ) || e.KeyChar == '_' || e.KeyChar == '-') 
                 {
                     lista.keyword += e.KeyChar;
+                    lista.MijenjajListu();
                     lista.listShow = true;
                     Point point = tb.GetPositionFromCharIndex(tb.SelectionStart);
                     point.Y += (int)Math.Ceiling(tb.Font.GetHeight()) + tb.Location.Y; 
                     point.X += tb.Location.Y; 
                     lista.Location = point;
                     lista.count++;
-                    lista.Show();
-                    lista.SelectedIndex = 0;
-                    lista.SelectedIndex = lista.FindString(lista.keyword);
                     tb.Focus();
 
                 }
@@ -345,31 +364,37 @@ namespace Projekt_RP3
 
         private void Tb_KeyDown(object sender, KeyEventArgs e)
         {
+            // Neke od kljucnih tipki ignoriraj
+            if(e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Menu
+                || e.KeyCode == Keys.ControlKey || e.KeyCode == Keys.RMenu)
+            {
+                return;
+            }
+
             RichTextBox tb = sender as RichTextBox;
             AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
+        
 
-            if (e.KeyCode == Keys.Enter)
+            // Ako je upisano nesto osim slova, _ i - onda spremi trenutnu rijec i sakrij listu
+            // Pazimo jos da ovdje iskljucimo tipke Up, Down i Tab jer one sluze za baratanje listom
+            if (!( char.IsLetterOrDigit(Convert.ToChar(e.KeyCode)) || 
+                e.KeyCode == Keys.OemMinus || 
+                e.KeyCode == Keys.Up || 
+                e.KeyCode == Keys.Down || 
+                e.KeyCode == Keys.Tab ||
+                e.KeyCode == Keys.Back)
+                || // Ovo provjerava ako je neki specijalni znak za koji treba kombinacije dvije tipke (npr. '&')
+                (char.IsLetterOrDigit(Convert.ToChar(e.KeyCode)) && (e.Alt || e.Control || e.Shift)) )
             {
-                lista.preporuka.Add(lista.keyword);
-                lista.bs.ResetBindings(false);
-                lista.count = 0;
-                lista.keyword = "";
-                lista.listShow = false;
+                lista.DodajRijecIResetiraj();
                 lista.Hide();
 
             }
-            if (e.KeyCode == Keys.Space)
-            {
-                lista.preporuka.Add(lista.keyword);
-                lista.bs.ResetBindings(false);
-                lista.count = 0;
-                lista.keyword = "";
-                lista.listShow = false;
-                lista.Hide();
-            }
-
+            
+            // Ako je lista pokazana
             if (lista.listShow == true)
             {
+                // Tipka gore pomice oznaceni element na listi gore
                 if (e.KeyCode == Keys.Up)
                 {
                     lista.Focus();
@@ -383,7 +408,7 @@ namespace Projekt_RP3
                     }
                     tb.Focus();
 
-                }
+                }// Tipka dolje pomice oznaceni element na listi dolje
                 else if (e.KeyCode == Keys.Down)
                 {
                     lista.Focus();
@@ -397,6 +422,7 @@ namespace Projekt_RP3
                     tb.Focus();
                 }
 
+                // Ako korisnik pritisne tab onda odabranu rijec stavi u tekst
                 if (e.KeyCode == Keys.Tab)
                 {
 
@@ -419,6 +445,8 @@ namespace Projekt_RP3
 
         private void Tb_DoubleClick(object sender, EventArgs e)
         {
+            // Double click misom na neki tekst u ListBox-u odabire taj tekst
+            // i stavlja ga u RichTextBox, resetira ostale podatke i sakriva listu
             RichTextBox tb = tabControl2.SelectedTab.Controls[1] as RichTextBox;
             AutoComplete lista = sender as AutoComplete;
 
@@ -434,6 +462,8 @@ namespace Projekt_RP3
             tb.SelectionStart = endPlace;
             lista.count = 0;
         }
+
+        
 
 
     }
