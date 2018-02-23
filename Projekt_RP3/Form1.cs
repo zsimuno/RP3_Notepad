@@ -50,6 +50,7 @@ namespace Projekt_RP3
             selectAllToolStripMenuItem.Enabled  = EnableClick;
             deleteToolStripMenuItem.Enabled     = EnableClick;
             changeFontToolStripMenuItem.Enabled = EnableClick;
+            tabSizeToolStripMenuItem.Enabled    = EnableClick;
 
         }
 
@@ -68,7 +69,6 @@ namespace Projekt_RP3
             tb.TabStop = false;
             tb.Dock = DockStyle.Fill;
             tb.Multiline = true;
-            tabSizeToolStripMenuItem.Enabled = true;
             
             AutoComplete a = new AutoComplete();
             a.DoubleClick += Tb_DoubleClick;
@@ -116,7 +116,7 @@ namespace Projekt_RP3
         {
             // Otvara dijalog za otvaranje teksta i otvara taj tekst u novom tabu
             OpenFileDialog open = new OpenFileDialog();
-            tabSizeToolStripMenuItem.Enabled = true;
+            
 
 
             if (open.ShowDialog() == DialogResult.OK)
@@ -585,6 +585,7 @@ namespace Projekt_RP3
             {
                 velicinaTaba = (int)num.Value;
                 num.Hide();
+                tabControl2.SelectedTab.Controls[1].Focus(); // RichTextBox
             }
 
         }
