@@ -549,16 +549,5 @@ namespace Projekt_RP3
             lista.count = 0;
         }
 
-        private void tabSizeMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-
-            RichTextBox tb = tabControl2.SelectedTab.Controls[1] as RichTextBox;
-
-            ProvjeriVeličinuTaba(tb);
-        }
-        //brace completion
-
     }
-
-   
 }
