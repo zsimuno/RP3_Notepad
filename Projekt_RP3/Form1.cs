@@ -16,12 +16,10 @@ namespace Projekt_RP3
     //Paziti:
     //Za svaku opciju koja ovisi o tome da ima neki text otvoren nadodati u provjera tabova!!!!!
     // TODO:
-    // Mijenjanje veličine taba (colision sa biranjem pomoću taba)
     // Boje?
     // Optional: 
     // Enter nakon { da prijeđe u novi red sa tabom
     // Find funkciju
-    // Na dobule click ponuđene opcije se sprema nedovršena riječ (no -> notepad)
 
     public partial class Form1 : Form
     {        
@@ -83,35 +81,6 @@ namespace Projekt_RP3
             UpdateCurrentLine();
         }
 
-        private void Tb_KeyUp(object sender, KeyEventArgs e)
-        {
-            UpdateCurrentLine();
-        }
-
-        private void Tb_MouseClick(object sender, MouseEventArgs e)
-        {
-            UpdateCurrentLine();
-        }
-
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // Zatvara odabrani tab
-            tabControl2.TabPages.Remove(tabControl2.SelectedTab);
-            ProvjeraTabova();
-            UpdateCurrentLine();
-        }
-
-        private void printToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // Printa odabrani tab
-            PrintPreviewDialog myPrintDialog = new PrintPreviewDialog();
-            printDocument1.DocumentName = tabControl2.SelectedTab.Text;
-            myPrintDialog.Document = printDocument1;
-            if (myPrintDialog.ShowDialog() == DialogResult.OK)
-                printDocument1.Print();
-            
-        }
-
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Otvara dijalog za otvaranje teksta i otvara taj tekst u novom tabu
@@ -153,6 +122,35 @@ namespace Projekt_RP3
             
             ProvjeraTabova();
             UpdateCurrentLine();
+        }
+
+        private void Tb_KeyUp(object sender, KeyEventArgs e)
+        {
+            UpdateCurrentLine();
+        }
+
+        private void Tb_MouseClick(object sender, MouseEventArgs e)
+        {
+            UpdateCurrentLine();
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Zatvara odabrani tab
+            tabControl2.TabPages.Remove(tabControl2.SelectedTab);
+            ProvjeraTabova();
+            UpdateCurrentLine();
+        }
+
+        private void printToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Printa odabrani tab
+            PrintPreviewDialog myPrintDialog = new PrintPreviewDialog();
+            printDocument1.DocumentName = tabControl2.SelectedTab.Text;
+            myPrintDialog.Document = printDocument1;
+            if (myPrintDialog.ShowDialog() == DialogResult.OK)
+                printDocument1.Print();
+            
         }
 
         private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
@@ -372,7 +370,7 @@ namespace Projekt_RP3
 
             UpdateCurrentLine();
 
-
+            // Ako nije ukljucen C# editor onda ne radi nista
             if (!cEditorToolStripMenuItem.Checked)
             {
                 return;
@@ -434,12 +432,15 @@ namespace Projekt_RP3
         private void Tb_KeyDown(object sender, KeyEventArgs e)
         {
             RichTextBox tb = sender as RichTextBox;
+            AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
 
             UpdateCurrentLine();
 
             //korekcija velicine taba
-            if (e.KeyCode == Keys.Tab)
+            if (e.KeyCode == Keys.Tab && lista.listShow == false)
             {
+                e.SuppressKeyPress = true;
+
                 int pozicija = tb.SelectionStart;
                 string razmak = "";
                 string prijeKursora = tb.Text.Substring(0, pozicija);
@@ -452,10 +453,13 @@ namespace Projekt_RP3
 
                 tb.SelectionStart = pozicija + velicinaTaba;
             }
+
+            // Ako nije ukljucen C# editor onda ne radi nista
             if (!cEditorToolStripMenuItem.Checked)
             {
                 return;
             }
+
             //brace completion
             if(e.KeyCode == Keys.B && e.Alt)
             {
@@ -474,17 +478,15 @@ namespace Projekt_RP3
             }
             
             
-            AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
-
-            
             // Ako je upisano nesto osim slova, _ i - onda spremi trenutnu rijec i sakrij listu
             // Pazimo jos da ovdje iskljucimo tipke Up, Down i Tab jer one sluze za baratanje listom
-            if (!( char.IsLetterOrDigit(Convert.ToChar(e.KeyCode)) || 
+            if (lista.listShow && 
+                !( char.IsLetterOrDigit(Convert.ToChar(e.KeyCode)) || 
                 e.KeyCode == Keys.OemMinus || 
                 e.KeyCode == Keys.Up || 
                 e.KeyCode == Keys.Down || 
                 e.KeyCode == Keys.Tab ||
-                e.KeyCode == Keys.Back)
+                e.KeyCode == Keys.Back )
                 || // Ovo provjerava ako je neki specijalni znak za koji treba kombinacije dvije tipke (npr. '&')
                 (char.IsLetterOrDigit(Convert.ToChar(e.KeyCode)) && (e.Alt || e.Control || e.Shift)) )
             {
@@ -499,6 +501,7 @@ namespace Projekt_RP3
                 // Tipka gore pomice oznaceni element na listi gore
                 if (e.KeyCode == Keys.Up)
                 {
+                    e.SuppressKeyPress = true;
                     lista.Focus();
                     if (lista.SelectedIndex != 0)
                     {
@@ -513,6 +516,7 @@ namespace Projekt_RP3
                 }// Tipka dolje pomice oznaceni element na listi dolje
                 else if (e.KeyCode == Keys.Down)
                 {
+                    e.SuppressKeyPress = true;
                     lista.Focus();
                     try
                     {
@@ -527,7 +531,32 @@ namespace Projekt_RP3
                 // Ako korisnik pritisne tab onda odabranu rijec stavi u tekst
                 if (e.KeyCode == Keys.Tab)
                 {
+                    e.SuppressKeyPress = true;
 
+                    // Ako je tab pristinut nakon nove rijeci onda tu rijec dodaj u listu svih rijeci
+                    // i nakon nje dodaj tabulator
+                    if (lista.SelectedItem == null)
+                    {
+                        lista.DodajRijecIResetiraj();
+
+                        // Dodaj tab nakon trenutne rijeci
+                        int pozicija = tb.SelectionStart;
+                        string razmak = "";
+                        string prijeKursora = tb.Text.Substring(0, pozicija);
+                        string poslijeKursora = tb.Text.Substring(pozicija, tb.Text.Length - pozicija);
+
+                        for (int i = 0; i < velicinaTaba; ++i)
+                            razmak += " ";
+
+                        tb.Text = prijeKursora + razmak + poslijeKursora;
+
+                        tb.SelectionStart = pozicija + velicinaTaba;
+
+                        return;
+                    }
+
+                    
+                    // Odabranu rijec stavi u tekst i resetiraj podatke
                     string autoText = lista.SelectedItem.ToString();
 
                     int beginPlace = tb.SelectionStart - lista.count;
@@ -540,6 +569,7 @@ namespace Projekt_RP3
                     int endPlace = autoText.Length + beginPlace;
                     tb.SelectionStart = endPlace;
                     lista.count = 0;
+                    lista.keyword = "";
 
                 }
             }
@@ -563,6 +593,7 @@ namespace Projekt_RP3
             int endPlace = autoText.Length + beginPlace;
             tb.SelectionStart = endPlace;
             lista.count = 0;
+            lista.keyword = "";
         }
 
         private void tabSizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -592,6 +623,7 @@ namespace Projekt_RP3
 
         private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Ako se promijeni tab onda u status baru mijenjaj koja je linija
             UpdateCurrentLine();
         }
 

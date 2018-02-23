@@ -65,7 +65,7 @@ namespace Projekt_RP3
         }
         public void DodajRijecIResetiraj() // Dodaje rijec u glavnu listu i resetira listu
         {
-            if(!SveRijeci.Contains(keyword))
+            if(!SveRijeci.Contains(keyword) && keyword != "" && count != 0)
             {
                 SveRijeci.Add(keyword);
                 SveRijeci.Sort();
