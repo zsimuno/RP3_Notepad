@@ -28,6 +28,7 @@ namespace Projekt_RP3
     {
         private readonly object tabControl1;
         
+        int velicinaTaba = 4;
         public Form1()
         {
             InitializeComponent();
@@ -60,7 +61,7 @@ namespace Projekt_RP3
             // Otvara novi tab sa novit txt file-om bez imena
             TabPage tp = new TabPage("(No name)");
             tabControl2.TabPages.Add(tp);
-
+            tabSizeToolStripMenuItem.Enabled = true;
             RichTextBox tb = new RichTextBox();
             tb.KeyDown     += Tb_KeyDown;
             tb.KeyPress    += Tb_KeyPress;
@@ -77,35 +78,14 @@ namespace Projekt_RP3
             tp.Controls.Add(tb);
 
             tabControl2.SelectTab(tp);
-
-            //veličine taba po defaultu 4 spacea(okoprilike)
-            tabSizeMenuItem3.Checked = true;
             
 
 
-            ProvjeriVeličinuTaba(tb);
+           
             ProvjeraTabova();
         }
-        //kad tb prihvaća tab
-        private void ProvjeriVeličinuTaba(RichTextBox tb)
-        {
-            if (tabSizeMenuItem1.Checked)
-            {
-                tb.SelectionTabs = new int[] { 25, 50, 75, 100 };
-            }
-            else if (tabSizeMenuItem2.Checked)
-            {
-                tb.SelectionTabs = new int[] { 50, 100, 150, 200 };
-            }
-            else if (tabSizeMenuItem3.Checked)
-            {
-                tb.SelectionTabs = new int[] { 100, 200, 300, 400 };
-            }
-            else if (tabSizeMenuItem4.Checked)
-            { 
-                tb.SelectionTabs = new int[] { 200, 400, 600, 800 };
-            }
-        }
+
+        
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -129,6 +109,7 @@ namespace Projekt_RP3
         {
             // Otvara dijalog za otvaranje teksta i otvara taj tekst u novom tabu
             OpenFileDialog open = new OpenFileDialog();
+            tabSizeToolStripMenuItem.Enabled = true;
 
             if (open.ShowDialog() == DialogResult.OK)
             {
@@ -157,10 +138,7 @@ namespace Projekt_RP3
 
                 tabControl2.SelectTab(tp);
 
-                tabSizeToolStripMenuItem.Enabled = true;
-                tabSizeMenuItem3.Checked = true;
-                tb.SelectionTabs = new int[] { 100, 200, 300, 400 };
-                ProvjeriVeličinuTaba(tb);
+               
             }
             
             ProvjeraTabova();
@@ -304,15 +282,20 @@ namespace Projekt_RP3
             TextBox textBox = new TextBox();
             textBox.Size = new Size(Width / 2 - label.Width - 160, 20);
             textBox.Location = new Point(50, 10);
+            textBox.KeyDown += traziEnter;
 
             Button btnTrazi = new Button();
             btnTrazi.Location = new Point(textBox.Width + 50, 10);
             btnTrazi.Size = new Size(50, 20);
             btnTrazi.Text = "Traži";
 
+            Button btnNazad = new Button();
+            btnNazad.Location = new Point(textBox.Width + 100, 10);
+            btnNazad.Size = new Size(50, 20);
+            btnNazad.Text = "Nazad";
 
             Button btnZatvori = new Button();
-            btnZatvori.Location = new Point(textBox.Width + 100, 10);
+            btnZatvori.Location = new Point(textBox.Width + 150, 10);
             btnZatvori.Size = new Size(60, 20);
             btnZatvori.Text = "Zatvori";
 
@@ -327,11 +310,24 @@ namespace Projekt_RP3
             splitContainer1.Panel2.Controls.Add(label);
             splitContainer1.Panel2.Controls.Add(textBox);
             splitContainer1.Panel2.Controls.Add(btnTrazi);
+            splitContainer1.Panel2.Controls.Add(btnNazad);
             splitContainer1.Panel2.Controls.Add(btnZatvori);
             
 
             btnTrazi.Click += new EventHandler(btnTrazi_Click);
+            btnNazad.Click += new EventHandler(btnNazad_Click);
             btnZatvori.Click += new EventHandler(btnZatvori_Click);
+        }
+
+        private void traziEnter(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                WebBrowser browser = (WebBrowser)splitContainer1.Panel2.Controls[0];
+                TextBox tb = sender as TextBox;
+
+                browser.Navigate(tb.Text);
+            }
         }
 
         void btnTrazi_Click(object s, EventArgs e1)
@@ -342,6 +338,14 @@ namespace Projekt_RP3
             TextBox textBox = new TextBox();
             textBox = (TextBox)splitContainer1.Panel2.Controls[2];
             browser.Navigate(textBox.Text);
+
+        }
+        void btnNazad_Click(object s, EventArgs e1)
+        {
+            splitContainer1.AutoScroll = true;
+            WebBrowser browser = (WebBrowser)splitContainer1.Panel2.Controls[0];
+
+            browser.GoBack();
 
         }
 
@@ -417,12 +421,27 @@ namespace Projekt_RP3
         private void Tb_KeyDown(object sender, KeyEventArgs e)
         {
             RichTextBox tb = sender as RichTextBox;
-            
+
+            //korekcija velicine taba
+            if(e.KeyCode == Keys.Tab)
+            {
+                int pozicija = tb.SelectionStart;
+                string razmak = "";
+                string prijeKursora = tb.Text.Substring(0, pozicija);
+                string poslijeKursora = tb.Text.Substring(pozicija, tb.Text.Length - pozicija);
+
+                for (int i = 0; i < velicinaTaba; ++i)
+                    razmak += " ";
+
+                tb.Text = prijeKursora + razmak + poslijeKursora;
+
+                tb.SelectionStart = pozicija + velicinaTaba;
+            }
             if (!cEditorToolStripMenuItem.Checked)
             {
                 return;
             }
-            
+            //brace completion
             if(e.KeyCode == Keys.B && e.Alt)
             {
                 int pozicija = tb.SelectionStart;
@@ -531,42 +550,28 @@ namespace Projekt_RP3
             lista.count = 0;
         }
 
-        private void tabSizeMenuItem_CheckedChanged(object sender, EventArgs e)
+        private void tabSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RichTextBox tb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
-
-            ToolStripMenuItem item = (ToolStripMenuItem)sender;
-            if(item.Text.Equals("1"))
-            {
-                tabSizeMenuItem1.Checked = true;
-                tabSizeMenuItem2.Checked = false;
-                tabSizeMenuItem3.Checked = false;
-                tabSizeMenuItem4.Checked = false;
-            }
-            else if(item.Text.Equals("2"))
-            {
-                tabSizeMenuItem1.Checked = false;
-                tabSizeMenuItem2.Checked = true;
-                tabSizeMenuItem3.Checked = false;
-                tabSizeMenuItem4.Checked = false;
-            }
-            else if(item.Text.Equals("3"))
-            {
-                tabSizeMenuItem1.Checked = false;
-                tabSizeMenuItem2.Checked = false;
-                tabSizeMenuItem3.Checked = true;
-                tabSizeMenuItem4.Checked = false;
-            }
-            else if(item.Text.Equals("4"))
-            {
-                tabSizeMenuItem1.Checked = false;
-                tabSizeMenuItem2.Checked = false;
-                tabSizeMenuItem3.Checked = false;
-                tabSizeMenuItem4.Checked = true;
-            }
+            NumericUpDown num = new NumericUpDown();
+            num.Location = new Point(Width / 3, 30);
+            num.Value = velicinaTaba;
+            num.KeyDown += PostaviVelicinu;
+            RichTextBox tb = tabControl2.SelectedTab.Controls[1] as RichTextBox;
+            tb.Controls.Add(num);
+            num.Show();
+            num.Focus();
             
-            ProvjeriVeličinuTaba(tb);
-        }
+         }
 
+        private void PostaviVelicinu(object sender, KeyEventArgs e)
+        {
+            NumericUpDown num = sender as NumericUpDown;
+            if(e.KeyCode == Keys.Enter)
+            {
+                velicinaTaba = (int)num.Value;
+                num.Hide();
+            }
+
+        }
     }
 }
