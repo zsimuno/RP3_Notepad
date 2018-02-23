@@ -468,7 +468,20 @@ namespace Projekt_RP3
                 tb.Text = tb.Text.Insert(pozicija, "}");
                 tb.SelectionStart = pozicija;
             }
-            
+            if(e.KeyCode == Keys.F && e.Alt)
+            {
+                int pozicija = tb.SelectionStart;
+
+                tb.Text = tb.Text.Insert(pozicija, "]");
+                tb.SelectionStart = pozicija;
+            }
+            if(e.KeyCode == Keys.D8 && e.Shift)
+            {
+                int pozicija = tb.SelectionStart;
+
+                tb.Text = tb.Text.Insert(pozicija, ")");
+                tb.SelectionStart = pozicija;
+            }
 
             // Neke od kljucnih tipki ignoriraj
             if (e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Menu
