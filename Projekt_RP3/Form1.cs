@@ -16,24 +16,23 @@ namespace Projekt_RP3
     //Paziti:
     //Za svaku opciju koja ovisi o tome da ima neki text otvoren nadodati u provjera tabova!!!!!
     // TODO:
-    // Mijenjanje veličite taba
-    // Brace Completion
+    // Mijenjanje veličine taba (colision sa biranjem pomoću taba)
     // Napraviti listu ključnih riječi (45. slajd predavanja)
     // Boje?
     // Optional: 
     // Status bar koji pokazuje u kojem smo retku
     // Enter nakon { da prijeđe u novi red sa tabom
     // Find funkciju
-    // Na dobule click ponuđene opcije se sprema nedovršena riješ (no -> notepad)
+    // Na dobule click ponuđene opcije se sprema nedovršena riječ (no -> notepad)
 
     public partial class Form1 : Form
     {
         private readonly object tabControl1;
-
+        
         public Form1()
         {
             InitializeComponent();
-
+            
         }
         
 
@@ -66,10 +65,12 @@ namespace Projekt_RP3
             RichTextBox tb = new RichTextBox();
             tb.KeyDown     += Tb_KeyDown;
             tb.KeyPress    += Tb_KeyPress;
+            tb.AcceptsTab = true;
             tb.TabStop = false;
             tb.Dock = DockStyle.Fill;
             tb.Multiline = true;
-
+            tabSizeToolStripMenuItem.Enabled = true;
+            
             AutoComplete a = new AutoComplete();
             a.DoubleClick += Tb_DoubleClick;
 
@@ -78,9 +79,51 @@ namespace Projekt_RP3
 
             tabControl2.SelectTab(tp);
 
+            //veličine taba po defaultu 4 spacea(okoprilike)
+            tabSizeMenuItem3.Checked = true;
+            
+
+
+            ProvjeriVeličinuTaba(tb);
             ProvjeraTabova();
         }
-       
+        //kad tb prihvaća tab
+        private void ProvjeriVeličinuTaba(RichTextBox tb)
+        {
+            if (tabSizeMenuItem1.Checked)
+            {
+                tabSizeMenuItem2.Checked = false;
+                tabSizeMenuItem3.Checked = false;
+                tabSizeMenuItem4.Checked = false;
+
+                tb.SelectionTabs = new int[] { 25, 50, 75, 100 };
+            }
+            if (tabSizeMenuItem2.Checked)
+            {
+                tabSizeMenuItem1.Checked = false;
+                tabSizeMenuItem3.Checked = false;
+                tabSizeMenuItem4.Checked = false;
+
+                tb.SelectionTabs = new int[] { 50, 100, 150, 200 };
+            }
+            if (tabSizeMenuItem3.Checked)
+            {
+                tabSizeMenuItem1.Checked = false;
+                tabSizeMenuItem2.Checked = false;
+                tabSizeMenuItem4.Checked = false;
+
+                tb.SelectionTabs = new int[] { 100, 200, 300, 400 };
+            }
+            if (tabSizeMenuItem4.Checked)
+            {
+                MessageBox.Show("tu");
+                tabSizeMenuItem1.Checked = false;
+                tabSizeMenuItem2.Checked = false;
+                tabSizeMenuItem3.Checked = false;
+
+                tb.SelectionTabs = new int[] { 200, 400, 600, 800 };
+            }
+        }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -117,6 +160,7 @@ namespace Projekt_RP3
                 RichTextBox tb = new RichTextBox();
                 tb.KeyDown      += Tb_KeyDown;
                 tb.KeyPress     += Tb_KeyPress;
+                tb.AcceptsTab = true;
                 tb.TabStop = false;
                 tb.Dock = DockStyle.Fill;
                 tb.Multiline = true;
@@ -130,8 +174,13 @@ namespace Projekt_RP3
                 tp.Controls.Add(tb);
 
                 tabControl2.SelectTab(tp);
-            }
 
+                tabSizeToolStripMenuItem.Enabled = true;
+                tabSizeMenuItem3.Checked = true;
+                tb.SelectionTabs = new int[] { 100, 200, 300, 400 };
+                ProvjeriVeličinuTaba(tb);
+            }
+            
             ProvjeraTabova();
         }
 
@@ -286,7 +335,7 @@ namespace Projekt_RP3
             btnZatvori.Text = "Zatvori";
 
             WebBrowser browser = new WebBrowser();
-            //browser.Document.Window.Size = new Size(Width, Height - 50);
+            
             browser.Size = new Size(Width, Height - 50);
             browser.Location = new Point(0, 40);
             browser.Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
@@ -322,12 +371,15 @@ namespace Projekt_RP3
         }
         private void Tb_KeyPress(object sender, KeyPressEventArgs e)
         {
+            RichTextBox tb = sender as RichTextBox;
+
+            
             if (!cEditorToolStripMenuItem.Checked)
             {
                 return;
             }
 
-            RichTextBox tb = sender as RichTextBox;
+           
             AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
 
             // Ako je lista već otvorena
@@ -382,10 +434,21 @@ namespace Projekt_RP3
 
         private void Tb_KeyDown(object sender, KeyEventArgs e)
         {
+            RichTextBox tb = sender as RichTextBox;
+            
             if (!cEditorToolStripMenuItem.Checked)
             {
                 return;
             }
+            
+            if(e.KeyCode == Keys.B && e.Alt)
+            {
+                int pozicija = tb.SelectionStart;
+
+                tb.Text = tb.Text.Insert(pozicija, "}");
+                tb.SelectionStart = pozicija;
+            }
+            
 
             // Neke od kljucnih tipki ignoriraj
             if (e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Menu
@@ -393,11 +456,11 @@ namespace Projekt_RP3
             {
                 return;
             }
-
-            RichTextBox tb = sender as RichTextBox;
+            
+            
             AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
-        
 
+            
             // Ako je upisano nesto osim slova, _ i - onda spremi trenutnu rijec i sakrij listu
             // Pazimo jos da ovdje iskljucimo tipke Up, Down i Tab jer one sluze za baratanje listom
             if (!( char.IsLetterOrDigit(Convert.ToChar(e.KeyCode)) || 
@@ -444,7 +507,7 @@ namespace Projekt_RP3
                     }
                     tb.Focus();
                 }
-
+                
                 // Ako korisnik pritisne tab onda odabranu rijec stavi u tekst
                 if (e.KeyCode == Keys.Tab)
                 {
@@ -485,6 +548,15 @@ namespace Projekt_RP3
             tb.SelectionStart = endPlace;
             lista.count = 0;
         }
+
+        private void tabSizeMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+
+            RichTextBox tb = tabControl2.SelectedTab.Controls[1] as RichTextBox;
+
+            ProvjeriVeličinuTaba(tb);
+        }
+        //brace completion
 
     }
 
