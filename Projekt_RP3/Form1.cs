@@ -17,7 +17,6 @@ namespace Projekt_RP3
     //Za svaku opciju koja ovisi o tome da ima neki text otvoren nadodati u provjera tabova!!!!!
     // TODO:
     // Mijenjanje veličine taba (colision sa biranjem pomoću taba)
-    // Napraviti listu ključnih riječi (45. slajd predavanja)
     // Boje?
     // Optional: 
     // Status bar koji pokazuje u kojem smo retku
