@@ -19,7 +19,6 @@ namespace Projekt_RP3
     // Mijenjanje veličine taba (colision sa biranjem pomoću taba)
     // Boje?
     // Optional: 
-    // Status bar koji pokazuje u kojem smo retku
     // Enter nakon { da prijeđe u novi red sa tabom
     // Find funkciju
     // Na dobule click ponuđene opcije se sprema nedovršena riječ (no -> notepad)
@@ -64,6 +63,7 @@ namespace Projekt_RP3
             tb.KeyDown     += Tb_KeyDown;
             tb.KeyPress    += Tb_KeyPress;
             tb.MouseClick  += Tb_MouseClick;
+            tb.KeyUp       += Tb_KeyUp;
             tb.AcceptsTab = true;
             tb.TabStop = false;
             tb.Dock = DockStyle.Fill;
@@ -80,6 +80,11 @@ namespace Projekt_RP3
             
            
             ProvjeraTabova();
+            UpdateCurrentLine();
+        }
+
+        private void Tb_KeyUp(object sender, KeyEventArgs e)
+        {
             UpdateCurrentLine();
         }
 
@@ -127,6 +132,7 @@ namespace Projekt_RP3
                 tb.KeyDown      += Tb_KeyDown;
                 tb.KeyPress     += Tb_KeyPress;
                 tb.MouseClick   += Tb_MouseClick;
+                tb.KeyUp        += Tb_KeyUp;
                 tb.AcceptsTab = true;
                 tb.TabStop = false;
                 tb.Dock = DockStyle.Fill;
