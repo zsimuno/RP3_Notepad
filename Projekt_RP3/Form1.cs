@@ -91,35 +91,18 @@ namespace Projekt_RP3
         {
             if (tabSizeMenuItem1.Checked)
             {
-                tabSizeMenuItem2.Checked = false;
-                tabSizeMenuItem3.Checked = false;
-                tabSizeMenuItem4.Checked = false;
-
                 tb.SelectionTabs = new int[] { 25, 50, 75, 100 };
             }
-            if (tabSizeMenuItem2.Checked)
+            else if (tabSizeMenuItem2.Checked)
             {
-                tabSizeMenuItem1.Checked = false;
-                tabSizeMenuItem3.Checked = false;
-                tabSizeMenuItem4.Checked = false;
-
                 tb.SelectionTabs = new int[] { 50, 100, 150, 200 };
             }
-            if (tabSizeMenuItem3.Checked)
+            else if (tabSizeMenuItem3.Checked)
             {
-                tabSizeMenuItem1.Checked = false;
-                tabSizeMenuItem2.Checked = false;
-                tabSizeMenuItem4.Checked = false;
-
                 tb.SelectionTabs = new int[] { 100, 200, 300, 400 };
             }
-            if (tabSizeMenuItem4.Checked)
-            {
-                MessageBox.Show("tu");
-                tabSizeMenuItem1.Checked = false;
-                tabSizeMenuItem2.Checked = false;
-                tabSizeMenuItem3.Checked = false;
-
+            else if (tabSizeMenuItem4.Checked)
+            { 
                 tb.SelectionTabs = new int[] { 200, 400, 600, 800 };
             }
         }
@@ -546,6 +529,43 @@ namespace Projekt_RP3
             int endPlace = autoText.Length + beginPlace;
             tb.SelectionStart = endPlace;
             lista.count = 0;
+        }
+
+        private void tabSizeMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            RichTextBox tb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
+
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            if(item.Text.Equals("1"))
+            {
+                tabSizeMenuItem1.Checked = true;
+                tabSizeMenuItem2.Checked = false;
+                tabSizeMenuItem3.Checked = false;
+                tabSizeMenuItem4.Checked = false;
+            }
+            else if(item.Text.Equals("2"))
+            {
+                tabSizeMenuItem1.Checked = false;
+                tabSizeMenuItem2.Checked = true;
+                tabSizeMenuItem3.Checked = false;
+                tabSizeMenuItem4.Checked = false;
+            }
+            else if(item.Text.Equals("3"))
+            {
+                tabSizeMenuItem1.Checked = false;
+                tabSizeMenuItem2.Checked = false;
+                tabSizeMenuItem3.Checked = true;
+                tabSizeMenuItem4.Checked = false;
+            }
+            else if(item.Text.Equals("4"))
+            {
+                tabSizeMenuItem1.Checked = false;
+                tabSizeMenuItem2.Checked = false;
+                tabSizeMenuItem3.Checked = false;
+                tabSizeMenuItem4.Checked = true;
+            }
+            
+            ProvjeriVeličinuTaba(tb);
         }
 
     }
