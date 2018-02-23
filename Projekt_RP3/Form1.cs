@@ -18,7 +18,6 @@ namespace Projekt_RP3
     // TODO:
     // Mijenjanje veličite taba
     // Brace Completion
-    // Napraviti listu ključnih riječi (45. slajd predavanja)
     // Boje?
     // Optional: 
     // Status bar koji pokazuje u kojem smo retku
@@ -485,8 +484,5 @@ namespace Projekt_RP3
             tb.SelectionStart = endPlace;
             lista.count = 0;
         }
-
     }
-
-   
 }
