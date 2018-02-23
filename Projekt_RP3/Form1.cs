@@ -25,9 +25,7 @@ namespace Projekt_RP3
     // Na dobule click ponuđene opcije se sprema nedovršena riječ (no -> notepad)
 
     public partial class Form1 : Form
-    {
-        private readonly object tabControl1;
-        
+    {        
         int velicinaTaba = 4;
         public Form1()
         {
@@ -65,6 +63,7 @@ namespace Projekt_RP3
             RichTextBox tb = new RichTextBox();
             tb.KeyDown     += Tb_KeyDown;
             tb.KeyPress    += Tb_KeyPress;
+            tb.MouseClick  += Tb_MouseClick;
             tb.AcceptsTab = true;
             tb.TabStop = false;
             tb.Dock = DockStyle.Fill;
@@ -79,19 +78,22 @@ namespace Projekt_RP3
 
             tabControl2.SelectTab(tp);
             
-
-
            
             ProvjeraTabova();
+            UpdateCurrentLine();
         }
 
-        
+        private void Tb_MouseClick(object sender, MouseEventArgs e)
+        {
+            UpdateCurrentLine();
+        }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Zatvara odabrani tab
             tabControl2.TabPages.Remove(tabControl2.SelectedTab);
             ProvjeraTabova();
+            UpdateCurrentLine();
         }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
@@ -111,6 +113,7 @@ namespace Projekt_RP3
             OpenFileDialog open = new OpenFileDialog();
             tabSizeToolStripMenuItem.Enabled = true;
 
+
             if (open.ShowDialog() == DialogResult.OK)
             {
                 string filename = open.FileName;
@@ -123,6 +126,7 @@ namespace Projekt_RP3
                 RichTextBox tb = new RichTextBox();
                 tb.KeyDown      += Tb_KeyDown;
                 tb.KeyPress     += Tb_KeyPress;
+                tb.MouseClick   += Tb_MouseClick;
                 tb.AcceptsTab = true;
                 tb.TabStop = false;
                 tb.Dock = DockStyle.Fill;
@@ -142,6 +146,7 @@ namespace Projekt_RP3
             }
             
             ProvjeraTabova();
+            UpdateCurrentLine();
         }
 
         private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
@@ -359,7 +364,9 @@ namespace Projekt_RP3
         {
             RichTextBox tb = sender as RichTextBox;
 
-            
+            UpdateCurrentLine();
+
+
             if (!cEditorToolStripMenuItem.Checked)
             {
                 return;
@@ -422,8 +429,10 @@ namespace Projekt_RP3
         {
             RichTextBox tb = sender as RichTextBox;
 
+            UpdateCurrentLine();
+
             //korekcija velicine taba
-            if(e.KeyCode == Keys.Tab)
+            if (e.KeyCode == Keys.Tab)
             {
                 int pozicija = tb.SelectionStart;
                 string razmak = "";
@@ -572,6 +581,26 @@ namespace Projekt_RP3
                 num.Hide();
             }
 
+        }
+
+        private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateCurrentLine();
+        }
+
+        private void UpdateCurrentLine()
+        {
+            if (tabControl2.SelectedTab == null)
+            {
+                CurrentLine.Text = "Line: ";
+                return;
+            }
+
+            RichTextBox tb = tabControl2.SelectedTab.Controls[1] as RichTextBox;
+            int cursorPosition = tb.SelectionStart;
+            int lineIndex = tb.GetLineFromCharIndex(cursorPosition);
+
+            CurrentLine.Text = "Line: " + (lineIndex+1).ToString();
         }
     }
 }
