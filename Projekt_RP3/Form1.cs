@@ -305,7 +305,7 @@ namespace Projekt_RP3
             Button btnTrazi   = new Button();
             btnTrazi.Location = new Point(textBox.Width + 50, 10);
             btnTrazi.Size     = new Size(50, 20);
-            btnTrazi.Text     = "Traži";
+            btnTrazi.Text     = "Otvori";
 
             Button btnNazad   = new Button();
             btnNazad.Location = new Point(textBox.Width + 100, 10);
