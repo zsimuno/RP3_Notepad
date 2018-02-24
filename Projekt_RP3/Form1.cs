@@ -282,6 +282,7 @@ namespace Projekt_RP3
             // Otvara browser desno od text editora
             splitContainer1.Panel2Collapsed = false;
             splitContainer1.Panel2.Show();
+            webBrowserToolStripMenuItem.Enabled = false;
             
             Label label = new Label();
             label.Text = "Adresa:";
@@ -305,12 +306,12 @@ namespace Projekt_RP3
 
             Button btnZatvori = new Button();
             btnZatvori.Location = new Point(textBox.Width + 150, 10);
-            btnZatvori.Size = new Size(60, 20);
+            btnZatvori.Size = new Size(50, 20);
             btnZatvori.Text = "Zatvori";
 
             WebBrowser browser = new WebBrowser();
             
-            browser.Size = new Size(Width, Height - 50);
+            browser.Size = new Size(splitContainer1.Panel2.Width-2, Height - 50);
             browser.Location = new Point(0, 40);
             browser.Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
             browser.ScriptErrorsSuppressed = true;
@@ -362,6 +363,8 @@ namespace Projekt_RP3
         {
             splitContainer1.Panel2Collapsed = true;
             splitContainer1.Panel2.Hide();
+            webBrowserToolStripMenuItem.Enabled = true;
+            splitContainer1.Panel2.Controls.Clear();
 
         }
         private void Tb_KeyPress(object sender, KeyPressEventArgs e)
