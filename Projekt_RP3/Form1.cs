@@ -33,7 +33,8 @@ namespace Projekt_RP3
 
         void ProvjeraTabova()
         {
-            // Mijenja mogućnost odabira opcija na osnovu toga ima li otvorenih tabova ili ne
+            // Provjerava ima li otvorenih tabova i ako nema onda stavlja na 'Disabled'
+            // opcije koje ovise o tome da ima otvorenih tabova (tj. otvorenih file-ova)
             Boolean EnableClick = true;
             if (tabControl2.SelectedTab == null)
             {
@@ -54,7 +55,7 @@ namespace Projekt_RP3
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Otvara novi tab sa novit txt file-om bez imena
+            // Otvara novi tab sa novim txt file-om bez imena
             TabPage tp = new TabPage("(No name)");
             tabControl2.TabPages.Add(tp);
             tabSizeToolStripMenuItem.Enabled = true;
@@ -63,10 +64,10 @@ namespace Projekt_RP3
             tb.KeyPress    += Tb_KeyPress;
             tb.MouseClick  += Tb_MouseClick;
             tb.KeyUp       += Tb_KeyUp;
-            tb.AcceptsTab = true;
-            tb.TabStop = false;
-            tb.Dock = DockStyle.Fill;
-            tb.Multiline = true;
+            tb.AcceptsTab   = true;
+            tb.TabStop      = false;
+            tb.Dock         = DockStyle.Fill;
+            tb.Multiline    = true;
             
             AutoComplete a = new AutoComplete();
             a.DoubleClick += Tb_DoubleClick;
@@ -87,9 +88,10 @@ namespace Projekt_RP3
             OpenFileDialog open = new OpenFileDialog();
             
 
-
             if (open.ShowDialog() == DialogResult.OK)
             {
+                // Cita tekst iz otvorenog file-a, stavlja ga u RichTextBox i stavlja taj
+                // RichTextBox u novootvoreni tab
                 string filename = open.FileName;
 
                 string[] filelines = File.ReadAllLines(filename);
@@ -102,10 +104,10 @@ namespace Projekt_RP3
                 tb.KeyPress     += Tb_KeyPress;
                 tb.MouseClick   += Tb_MouseClick;
                 tb.KeyUp        += Tb_KeyUp;
-                tb.AcceptsTab = true;
-                tb.TabStop = false;
-                tb.Dock = DockStyle.Fill;
-                tb.Multiline = true;
+                tb.AcceptsTab    = true;
+                tb.TabStop       = false;
+                tb.Dock          = DockStyle.Fill;
+                tb.Multiline     = true;
                 foreach (string s in filelines)
                     tb.Text += s + "\n";
 
@@ -124,13 +126,17 @@ namespace Projekt_RP3
             UpdateCurrentLine();
         }
 
+        
         private void Tb_KeyUp(object sender, KeyEventArgs e)
         {
+            // Na KeyUp provjeri na kojoj se liniji nalazi kursor
             UpdateCurrentLine();
         }
 
+        
         private void Tb_MouseClick(object sender, MouseEventArgs e)
         {
+            // Na MouseClick provjeri na kojoj se liniji nalazi kursor
             UpdateCurrentLine();
         }
 
@@ -146,8 +152,9 @@ namespace Projekt_RP3
         {
             // Printa odabrani tab
             PrintPreviewDialog myPrintDialog = new PrintPreviewDialog();
-            printDocument1.DocumentName = tabControl2.SelectedTab.Text;
-            myPrintDialog.Document = printDocument1;
+            printDocument1.DocumentName      = tabControl2.SelectedTab.Text;
+            myPrintDialog.Document           = printDocument1;
+
             if (myPrintDialog.ShowDialog() == DialogResult.OK)
                 printDocument1.Print();
             
@@ -156,13 +163,14 @@ namespace Projekt_RP3
         private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
         {
             // Pomoćna funkcija za printanje
-            string str = tabControl2.SelectedTab.Controls[1].Text;
+            RichTextBox tb = tabControl2.SelectedTab.Controls[1] as RichTextBox;
+            string str     = tb.Text;
             int chars;
             int lines;
-            Font f = new Font("Arial", 12);
+            Font f       = tb.Font;
             SolidBrush b = new SolidBrush(Color.Black);
             StringFormat strformat = new StringFormat();
-            strformat.Trimming = StringTrimming.Word;
+            strformat.Trimming     = StringTrimming.Word;
             
             RectangleF myrect = new RectangleF(e.MarginBounds.Left,e.MarginBounds.Top, 
                                                e.MarginBounds.Width, e.MarginBounds.Height);
@@ -190,8 +198,8 @@ namespace Projekt_RP3
             RichTextBox Rtb = (RichTextBox) tabControl2.SelectedTab.Controls[1];
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.Filter           = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex      = 1;
             saveFileDialog1.RestoreDirectory = true;
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
@@ -222,8 +230,8 @@ namespace Projekt_RP3
             RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
             if (Clipboard.GetText(TextDataFormat.Text).ToString() != string.Empty)
             {
-                Rtb.SelectedText = string.Empty; // Za pasteanje preko odabranog texta
-                int i = Rtb.SelectionStart; // Da zapami gdje je kursor bio
+                Rtb.SelectedText = string.Empty; // Za paste-anje preko odabranog texta
+                int i = Rtb.SelectionStart; // Da zapamti gdje je kursor bio
                 string str = Clipboard.GetText(TextDataFormat.Text).ToString();
                 i += str.Length; 
                 Rtb.Text = Rtb.Text.Insert(Rtb.SelectionStart, str);
@@ -233,7 +241,7 @@ namespace Projekt_RP3
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Cut-a text i stavlja na cliboard
+            // Cut-a text i stavlja na clipboard
             RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
             if (Rtb.SelectedText != string.Empty)
             {
@@ -259,19 +267,19 @@ namespace Projekt_RP3
         private void changeFontToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Mijenja font teksta
-            RichTextBox Rtb = (RichTextBox)tabControl2.SelectedTab.Controls[1];
-            FontDialog fd = new FontDialog();
-            fd.ShowColor = true;
+            RichTextBox Rtb  = (RichTextBox)tabControl2.SelectedTab.Controls[1];
+            FontDialog fd    = new FontDialog();
+            fd.ShowColor     = true;
             if (fd.ShowDialog() == DialogResult.OK)
             {
                 if(Rtb.SelectedText == string.Empty)
                 {
-                    Rtb.Font = fd.Font;
+                    Rtb.Font      = fd.Font;
                     Rtb.ForeColor = fd.Color;
                 }
                 else
                 {
-                    Rtb.SelectionFont = fd.Font;
+                    Rtb.SelectionFont  = fd.Font;
                     Rtb.SelectionColor = fd.Color;
                 }
             }
@@ -284,36 +292,36 @@ namespace Projekt_RP3
             splitContainer1.Panel2.Show();
             webBrowserToolStripMenuItem.Enabled = false;
             
-            Label label = new Label();
-            label.Text = "Adresa:";
-            label.Size = new Size(45, 20);
-            label.Location = new Point(5, 10);
+            Label label      = new Label();
+            label.Text       = "Adresa:";
+            label.Size       = new Size(45, 20);
+            label.Location   = new Point(5, 10);
 
-            TextBox textBox = new TextBox();
-            textBox.Size = new Size(Width / 2 - label.Width - 160, 20);
+            TextBox textBox  = new TextBox();
+            textBox.Size     = new Size(Width / 2 - label.Width - 160, 20);
             textBox.Location = new Point(50, 10);
             textBox.KeyDown += traziEnter;
 
-            Button btnTrazi = new Button();
+            Button btnTrazi   = new Button();
             btnTrazi.Location = new Point(textBox.Width + 50, 10);
-            btnTrazi.Size = new Size(50, 20);
-            btnTrazi.Text = "Traži";
+            btnTrazi.Size     = new Size(50, 20);
+            btnTrazi.Text     = "Traži";
 
-            Button btnNazad = new Button();
+            Button btnNazad   = new Button();
             btnNazad.Location = new Point(textBox.Width + 100, 10);
-            btnNazad.Size = new Size(50, 20);
-            btnNazad.Text = "Nazad";
+            btnNazad.Size     = new Size(50, 20);
+            btnNazad.Text     = "Nazad";
 
-            Button btnZatvori = new Button();
+            Button btnZatvori   = new Button();
             btnZatvori.Location = new Point(textBox.Width + 150, 10);
-            btnZatvori.Size = new Size(50, 20);
-            btnZatvori.Text = "Zatvori";
+            btnZatvori.Size     = new Size(50, 20);
+            btnZatvori.Text     = "Zatvori";
 
             WebBrowser browser = new WebBrowser();
             
-            browser.Size = new Size(splitContainer1.Panel2.Width-2, Height - 50);
+            browser.Size     = new Size(splitContainer1.Panel2.Width-2, Height - 50);
             browser.Location = new Point(0, 40);
-            browser.Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
+            browser.Anchor   = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
             browser.ScriptErrorsSuppressed = true;
 
             splitContainer1.Panel2.Controls.Add(browser);
@@ -324,8 +332,8 @@ namespace Projekt_RP3
             splitContainer1.Panel2.Controls.Add(btnZatvori);
             
 
-            btnTrazi.Click += new EventHandler(btnTrazi_Click);
-            btnNazad.Click += new EventHandler(btnNazad_Click);
+            btnTrazi.Click   += new EventHandler(btnTrazi_Click);
+            btnNazad.Click   += new EventHandler(btnNazad_Click);
             btnZatvori.Click += new EventHandler(btnZatvori_Click);
         }
 
@@ -439,7 +447,7 @@ namespace Projekt_RP3
 
             UpdateCurrentLine();
 
-            //korekcija velicine taba
+            // Korekcija velicine taba 
             if (e.KeyCode == Keys.Tab && lista.listShow == false)
             {
                 e.SuppressKeyPress = true;
@@ -544,22 +552,25 @@ namespace Projekt_RP3
                     tb.Focus();
                 }
                 
-                // Ako korisnik pritisne tab onda odabranu rijec stavi u tekst
+                // Ako korisnik pritisne tab onda odabranu rijec stavi u tekst ili postavi tab i spremi rijec
                 if (e.KeyCode == Keys.Tab)
                 {
+                    int pozicija;
+                    string prijeKursora;
+                    string poslijeKursora;
                     e.SuppressKeyPress = true;
 
-                    // Ako je tab pristinut nakon nove rijeci onda tu rijec dodaj u listu svih rijeci
+                    // Ako je tab pritisnut nakon nove rijeci onda tu rijec dodaj u listu svih rijeci
                     // i nakon nje dodaj tabulator
                     if (lista.SelectedItem == null)
                     {
                         lista.DodajRijecIResetiraj();
 
                         // Dodaj tab nakon trenutne rijeci
-                        int pozicija = tb.SelectionStart;
+                        pozicija = tb.SelectionStart;
                         string razmak = "";
-                        string prijeKursora = tb.Text.Substring(0, pozicija);
-                        string poslijeKursora = tb.Text.Substring(pozicija, tb.Text.Length - pozicija);
+                        prijeKursora = tb.Text.Substring(0, pozicija);
+                        poslijeKursora = tb.Text.Substring(pozicija, tb.Text.Length - pozicija);
 
                         for (int i = 0; i < velicinaTaba; ++i)
                             razmak += " ";
@@ -578,12 +589,14 @@ namespace Projekt_RP3
                     int beginPlace = tb.SelectionStart - lista.count;
                     tb.Select(beginPlace, lista.count);
                     tb.SelectedText = "";
-                    tb.Text += autoText;
+                    pozicija = tb.SelectionStart;
+                    prijeKursora = tb.Text.Substring(0, pozicija);
+                    poslijeKursora = tb.Text.Substring(pozicija, tb.Text.Length - pozicija);
+                    tb.Text = prijeKursora + autoText + poslijeKursora;
                     tb.Focus();
                     lista.listShow = false;
                     lista.Hide();
-                    int endPlace = autoText.Length + beginPlace;
-                    tb.SelectionStart = endPlace;
+                    tb.SelectionStart = autoText.Length + beginPlace;
                     lista.count = 0;
                     lista.keyword = "";
 
@@ -602,18 +615,21 @@ namespace Projekt_RP3
             int beginPlace = tb.SelectionStart - lista.count;
             tb.Select(beginPlace, lista.count);
             tb.SelectedText = "";
-            tb.Text += autoText;
+            int pozicija = tb.SelectionStart;
+            string prijeKursora = tb.Text.Substring(0, pozicija);
+            string poslijeKursora = tb.Text.Substring(pozicija, tb.Text.Length - pozicija);
+            tb.Text = prijeKursora + autoText + poslijeKursora;
             tb.Focus();
             lista.listShow = false;
             lista.Hide();
-            int endPlace = autoText.Length + beginPlace;
-            tb.SelectionStart = endPlace;
+            tb.SelectionStart = autoText.Length + beginPlace;
             lista.count = 0;
             lista.keyword = "";
         }
 
         private void tabSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Otvori NumericUpDown u kojem odabiremo velicinu taba
             NumericUpDown num = new NumericUpDown();
             num.Location = new Point(Width / 3, 30);
             num.Value = velicinaTaba;
@@ -627,6 +643,7 @@ namespace Projekt_RP3
 
         private void PostaviVelicinu(object sender, KeyEventArgs e)
         {
+            // Provjerava jel u NumericUpDown pritisnuta tipka 'Enter' i sprema novu velicinu taba
             NumericUpDown num = sender as NumericUpDown;
             if(e.KeyCode == Keys.Enter)
             {
@@ -645,6 +662,7 @@ namespace Projekt_RP3
 
         private void UpdateCurrentLine()
         {
+            // Provjerava koja je trenutna linija teksta i mijenja podatak na dnu aplikacije
             if (tabControl2.SelectedTab == null)
             {
                 CurrentLine.Text = "Line: ";
