@@ -13,24 +13,14 @@ using System.Windows.Forms;
 
 namespace Projekt_RP3
 {
-    //Paziti:
-    //Za svaku opciju koja ovisi o tome da ima neki text otvoren nadodati u provjera tabova!!!!!
-    // TODO:
-    // Boje?
-    // Optional: 
-    // Enter nakon { da prijeđe u novi red sa tabom
-    // Find funkciju
-
     public partial class Form1 : Form
     {        
         int velicinaTaba = 4;
         public Form1()
         {
-            InitializeComponent();
-            
+            InitializeComponent();           
         }
         
-
         void ProvjeraTabova()
         {
             // Provjerava ima li otvorenih tabova i ako nema onda stavlja na 'Disabled'
@@ -50,7 +40,6 @@ namespace Projekt_RP3
             deleteToolStripMenuItem.Enabled     = EnableClick;
             changeFontToolStripMenuItem.Enabled = EnableClick;
             tabSizeToolStripMenuItem.Enabled    = EnableClick;
-
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -77,7 +66,6 @@ namespace Projekt_RP3
 
             tabControl2.SelectTab(tp);
             
-           
             ProvjeraTabova();
             UpdateCurrentLine();
         }
@@ -87,7 +75,6 @@ namespace Projekt_RP3
             // Otvara dijalog za otvaranje teksta i otvara taj tekst u novom tabu
             OpenFileDialog open = new OpenFileDialog();
             
-
             if (open.ShowDialog() == DialogResult.OK)
             {
                 // Cita tekst iz otvorenog file-a, stavlja ga u RichTextBox i stavlja taj
@@ -117,22 +104,18 @@ namespace Projekt_RP3
                 tp.Controls.Add(a);
                 tp.Controls.Add(tb);
 
-                tabControl2.SelectTab(tp);
-
-               
+                tabControl2.SelectTab(tp);               
             }
             
             ProvjeraTabova();
             UpdateCurrentLine();
         }
 
-        
         private void Tb_KeyUp(object sender, KeyEventArgs e)
         {
             // Na KeyUp provjeri na kojoj se liniji nalazi kursor
             UpdateCurrentLine();
         }
-
         
         private void Tb_MouseClick(object sender, MouseEventArgs e)
         {
@@ -181,7 +164,6 @@ namespace Projekt_RP3
             
             e.Graphics.DrawString(printstr, f, b, myrect, strformat);
             
-
             if (str.Length > chars) 
             {
                 str = str.Substring(chars);
@@ -189,7 +171,6 @@ namespace Projekt_RP3
             }     
             else
                 e.HasMorePages = false;
-
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -356,15 +337,14 @@ namespace Projekt_RP3
             TextBox textBox = new TextBox();
             textBox = (TextBox)splitContainer1.Panel2.Controls[2];
             browser.Navigate(textBox.Text);
-
         }
+
         void btnNazad_Click(object s, EventArgs e1)
         {
             splitContainer1.AutoScroll = true;
             WebBrowser browser = (WebBrowser)splitContainer1.Panel2.Controls[0];
 
             browser.GoBack();
-
         }
 
         void btnZatvori_Click(object s, EventArgs e1)
@@ -373,8 +353,8 @@ namespace Projekt_RP3
             splitContainer1.Panel2.Hide();
             webBrowserToolStripMenuItem.Enabled = true;
             splitContainer1.Panel2.Controls.Clear();
-
         }
+
         private void Tb_KeyPress(object sender, KeyPressEventArgs e)
         {
             RichTextBox tb = sender as RichTextBox;
@@ -386,7 +366,6 @@ namespace Projekt_RP3
             {
                 return;
             }
-
            
             AutoComplete lista = (AutoComplete)tabControl2.SelectedTab.Controls[0];
 
@@ -408,8 +387,6 @@ namespace Projekt_RP3
                     }
                     else 
                         tb.Focus();
-                    
-                    
                 }
                 else
                 {
@@ -418,7 +395,6 @@ namespace Projekt_RP3
                     lista.count++;
                     tb.Focus();
                 }
-                
             }
             else
             { 
@@ -435,7 +411,6 @@ namespace Projekt_RP3
                     lista.Location = point;
                     lista.count++;
                     tb.Focus();
-
                 }
             }
         }
@@ -501,7 +476,6 @@ namespace Projekt_RP3
                 return;
             }
             
-            
             // Ako je upisano nesto osim slova, _ i - onda spremi trenutnu rijec i sakrij listu
             // Pazimo jos da ovdje iskljucimo tipke Up, Down i Tab jer one sluze za baratanje listom
             if (lista.listShow && 
@@ -516,7 +490,6 @@ namespace Projekt_RP3
             {
                 lista.DodajRijecIResetiraj();
                 lista.Hide();
-
             }
             
             // Ako je lista pokazana
@@ -599,7 +572,6 @@ namespace Projekt_RP3
                     tb.SelectionStart = autoText.Length + beginPlace;
                     lista.count = 0;
                     lista.keyword = "";
-
                 }
             }
         }
@@ -638,7 +610,6 @@ namespace Projekt_RP3
             tb.Controls.Add(num);
             num.Show();
             num.Focus();
-            
          }
 
         private void PostaviVelicinu(object sender, KeyEventArgs e)
@@ -651,7 +622,6 @@ namespace Projekt_RP3
                 num.Hide();
                 tabControl2.SelectedTab.Controls[1].Focus(); // RichTextBox
             }
-
         }
 
         private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
